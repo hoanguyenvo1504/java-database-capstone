@@ -1,13 +1,13 @@
 package com.project.back_end.models;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
 // @Entity annotation:
 //    - Marks the class as a JPA entity, meaning it represents a table in the database.
@@ -44,6 +44,10 @@ public class Patient {
 //      - Represents the patient's email address.
 //      - The @NotNull annotation ensures that an email address must be provided.
 //      - The @Email annotation validates that the email address follows a valid email format (e.g., patient@example.com).
+
+    @NotNull
+    @Email
+    private String email;
 
 // 4. 'password' field:
 //    - Type: private String
@@ -85,9 +89,10 @@ public class Patient {
     public Patient() {
     }
 
-    public Patient(Long id, String name, String password, String phone, String address) {
+    public Patient(Long id, String name, String email, String password, String phone, String address) {
         this.id = id;
         this.name = name;
+        this.email = email;
         this.password = password;
         this.phone = phone;
         this.address = address;
@@ -123,6 +128,14 @@ public class Patient {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getAddress() {

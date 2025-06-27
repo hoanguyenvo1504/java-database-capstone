@@ -1,10 +1,9 @@
 package com.project.back_end.models;
 
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import javax.persistence.Id;
 
 // @Document annotation:
 //    - Marks the class as a MongoDB document (a collection in MongoDB).
