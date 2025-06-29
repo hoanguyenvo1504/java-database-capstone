@@ -1,22 +1,48 @@
 package com.project.back_end.mvc;
 
-public class DashboardController {
+
+import com.project.back_end.services.TokenService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 // 1. Set Up the MVC Controller Class:
 //    - Annotate the class with `@Controller` to indicate that it serves as an MVC controller returning view names (not JSON).
 //    - This class handles routing to admin and doctor dashboard pages based on token validation.
 
+@Controller
+@RequestMapping("/")
+public class DashboardController {
 
 // 2. Autowire the Shared Service:
 //    - Inject the common `Service` class, which provides the token validation logic used to authorize access to dashboards.
 
+    private final TokenService tokenService;
 
+    @Autowired
+    public DashboardController(TokenService tokenService) {
+        this.tokenService = tokenService;
+    }
 // 3. Define the `adminDashboard` Method:
 //    - Handles HTTP GET requests to `/adminDashboard/{token}`.
 //    - Accepts an admin's token as a path variable.
 //    - Validates the token using the shared service for the `"admin"` role.
 //    - If the token is valid (i.e., no errors returned), forwards the user to the `"admin/adminDashboard"` view.
 //    - If invalid, redirects to the root URL, likely the login or home page.
+
+    @GetMapping("/adminDashboard/{token}")
+    public String adminDashboard(@PathVariable String token, Model model) {
+        String error = tokenService.validateToken(token, "admin");
+        if (error == null || error.isEmpty()) {
+            model.addAttribute("token", token);
+            return "admin/adminDashboard";
+        } else {
+            return "redirect:/";
+        }
+    }
 
 
 // 4. Define the `doctorDashboard` Method:
