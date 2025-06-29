@@ -3,6 +3,7 @@ package com.project.back_end.mvc;
 
 import com.project.back_end.services.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,11 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/")
 public class DashboardController {
-
 // 2. Autowire the Shared Service:
 //    - Inject the common `Service` class, which provides the token validation logic used to authorize access to dashboards.
-
     private final TokenService tokenService;
+
+    @Value("${app.login-page:/}")
+    private String loginPage;
 
     @Autowired
     public DashboardController(TokenService tokenService) {
@@ -40,10 +42,9 @@ public class DashboardController {
             model.addAttribute("token", token);
             return "admin/adminDashboard";
         } else {
-            return "redirect:/";
+            return "redirect:" + loginPage;
         }
     }
-
 
 // 4. Define the `doctorDashboard` Method:
 //    - Handles HTTP GET requests to `/doctorDashboard/{token}`.
@@ -51,6 +52,14 @@ public class DashboardController {
 //    - Validates the token using the shared service for the `"doctor"` role.
 //    - If the token is valid, forwards the user to the `"doctor/doctorDashboard"` view.
 //    - If the token is invalid, redirects to the root URL.
-
-
+    @GetMapping("/doctorDashboard/{token}")
+    public String doctorDashboard(@PathVariable String token, Model model) {
+        String error = tokenService.validateToken(token, "doctor");
+        if (error == null || error.isEmpty()) {
+            model.addAttribute("token", token);
+            return "doctor/doctorDashboard";
+        } else {
+            return "redirect:" + loginPage;
+        }
+    }
 }
