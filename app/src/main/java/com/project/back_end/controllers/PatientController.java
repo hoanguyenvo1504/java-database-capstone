@@ -4,7 +4,7 @@ package com.project.back_end.controllers;
 import com.project.back_end.DTO.Login;
 import com.project.back_end.models.Patient;
 import com.project.back_end.services.PatientService;
-import com.project.back_end.services.Service;
+import com.project.back_end.services.ServiceLayer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,11 +22,11 @@ public class PatientController {
 //    - Inject `PatientService` to handle patient-specific logic such as creation, retrieval, and appointments.
 //    - Inject the shared `Service` class for tasks like token validation and login authentication.
     private final PatientService patientService;
-    private final Service service;
+    private final ServiceLayer serviceLayer;
 
-    public PatientController(PatientService patientService, Service service) {
+    public PatientController(PatientService patientService, ServiceLayer serviceLayer) {
         this.patientService = patientService;
-        this.service = service;
+        this.serviceLayer = serviceLayer;
     }
 
 // 3. Define the `getPatient` Method:
@@ -36,7 +36,7 @@ public class PatientController {
     @GetMapping("/{token}")
     public ResponseEntity<?> getPatient(@PathVariable String token) {
         // Validate token for patient role
-        ResponseEntity<Map<String, Object>> validation = service.validateToken(token, "patient");
+        ResponseEntity<Map<String, Object>> validation = serviceLayer.validateToken(token, "patient");
         if (validation.getStatusCode() != HttpStatus.OK) {
             return validation;
         }
@@ -52,7 +52,7 @@ public class PatientController {
     @PostMapping
     public ResponseEntity<?> createPatient(@RequestBody Patient patient) {
         // Check if patient already exists (by email or phone)
-        boolean isValid = service.validatePatient(patient.getEmail(), patient.getPhone());
+        boolean isValid = serviceLayer.validatePatient(patient.getEmail(), patient.getPhone());
         if (!isValid) {
             return new ResponseEntity<>("Patient already exists with this email or phone.", HttpStatus.CONFLICT);
         }
@@ -72,7 +72,7 @@ public class PatientController {
 //    - Returns a response with a token or an error message depending on login success.
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Login login) {
-        return service.validatePatientLogin(login.getEmail(), login.getPassword());
+        return serviceLayer.validatePatientLogin(login.getEmail(), login.getPassword());
     }
 
 // 6. Define the `getPatientAppointment` Method:
@@ -86,7 +86,7 @@ public class PatientController {
             @PathVariable String user,
             @PathVariable String token
     ) {
-        ResponseEntity<Map<String, Object>> validation = service.validateToken(token, user);
+        ResponseEntity<Map<String, Object>> validation = serviceLayer.validateToken(token, user);
         if (validation.getStatusCode() != HttpStatus.OK) {
             return validation;
         }
@@ -106,11 +106,11 @@ public class PatientController {
             @PathVariable String name,
             @PathVariable String token
     ) {
-        ResponseEntity<Map<String, Object>> validation = service.validateToken(token, "patient");
+        ResponseEntity<Map<String, Object>> validation = serviceLayer.validateToken(token, "patient");
         if (validation.getStatusCode() != HttpStatus.OK) {
             return validation;
         }
-        return service.filterPatient(token, condition, name);
+        return serviceLayer.filterPatient(token, condition, name);
     }
 
 

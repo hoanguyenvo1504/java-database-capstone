@@ -3,7 +3,7 @@ package com.project.back_end.controllers;
 import com.project.back_end.DTO.Login;
 import com.project.back_end.models.Doctor;
 import com.project.back_end.services.DoctorService;
-import com.project.back_end.services.Service;
+import com.project.back_end.services.ServiceLayer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,12 +27,12 @@ public class DoctorController {
 //    - Inject the shared `Service` class for general-purpose features like token validation and filtering.
 
     private final DoctorService doctorService;
-    private final Service service;
+    private final ServiceLayer serviceLayer;
 
     // 2️⃣ Constructor injection
-    public DoctorController(DoctorService doctorService, Service service) {
+    public DoctorController(DoctorService doctorService, ServiceLayer serviceLayer) {
         this.doctorService = doctorService;
-        this.service = service;
+        this.serviceLayer = serviceLayer;
     }
 
 
@@ -49,7 +49,7 @@ public class DoctorController {
             @PathVariable String token
     ) {
         // Validate token by role
-        ResponseEntity<Map<String, Object>> validation = service.validateToken(token, user);
+        ResponseEntity<Map<String, Object>> validation = serviceLayer.validateToken(token, user);
         if (validation.getStatusCode() != HttpStatus.OK) {
             return validation;
         }
@@ -91,7 +91,7 @@ public class DoctorController {
             @PathVariable String token
     ) {
         // Validate token for admin
-        ResponseEntity<Map<String, Object>> validation = service.validateToken(token, "admin");
+        ResponseEntity<Map<String, Object>> validation = serviceLayer.validateToken(token, "admin");
         if (validation.getStatusCode() != HttpStatus.OK) {
             return validation;
         }
@@ -129,7 +129,7 @@ public class DoctorController {
             @PathVariable String token
     ) {
         // Validate token for admin
-        ResponseEntity<Map<String, Object>> validation = service.validateToken(token, "admin");
+        ResponseEntity<Map<String, Object>> validation = serviceLayer.validateToken(token, "admin");
         if (validation.getStatusCode() != HttpStatus.OK) {
             return validation;
         }
@@ -155,7 +155,7 @@ public class DoctorController {
             @PathVariable String token
     ) {
         // Validate token for admin
-        ResponseEntity<Map<String, Object>> validation = service.validateToken(token, "admin");
+        ResponseEntity<Map<String, Object>> validation = serviceLayer.validateToken(token, "admin");
         if (validation.getStatusCode() != HttpStatus.OK) {
             return validation;
         }
@@ -180,7 +180,7 @@ public class DoctorController {
             @PathVariable String time,
             @PathVariable String specialty
     ) {
-        return service.filterDoctor(name, specialty, time);
+        return serviceLayer.filterDoctor(name, specialty, time);
     }
 
     private List<LocalTime> getAllSlots() {

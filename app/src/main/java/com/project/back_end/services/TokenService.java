@@ -65,26 +65,25 @@ public class TokenService {
 
     public String validateToken(String token, String role) {
         try {
-            String email = extractEmail(token);
-            if (email == null || email.isEmpty()) {
-                return "Invalid token: cannot extract email";
+            String subject = extractEmail(token);
+            if (subject == null || subject.isBlank()) {
+                return "Invalid token: cannot extract subject";
             }
-
             switch (role.toLowerCase()) {
                 case "admin":
-                    if (adminRepository.existsByEmail(email)) {
+                    if (adminRepository.findByUsername(subject) != null) {
                         return ""; // valid
                     } else {
                         return "Invalid admin token: user not found";
                     }
                 case "doctor":
-                    if (doctorRepository.findByEmail(email) != null ) {
+                    if (doctorRepository.findByEmail(subject) != null) {
                         return ""; // valid
                     } else {
                         return "Invalid doctor token: user not found";
                     }
                 case "patient":
-                    if (patientRepository.findByEmail(email) != null) {
+                    if (patientRepository.findByEmail(subject) != null) {
                         return ""; // valid
                     } else {
                         return "Invalid patient token: user not found";
@@ -92,7 +91,6 @@ public class TokenService {
                 default:
                     return "Invalid role: " + role;
             }
-
         } catch (Exception e) {
             return "Token validation error: " + e.getMessage();
         }

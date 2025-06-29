@@ -4,7 +4,7 @@ import com.project.back_end.models.Appointment;
 import com.project.back_end.models.Prescription;
 import com.project.back_end.services.AppointmentService;
 import com.project.back_end.services.PrescriptionService;
-import com.project.back_end.services.Service;
+import com.project.back_end.services.ServiceLayer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,15 +25,15 @@ public class PrescriptionController {
 //    - Inject the shared `Service` class for token validation and role-based access control.
 //    - Inject `AppointmentService` to update appointment status after a prescription is issued.
     private final PrescriptionService prescriptionService;
-    private final Service service;
+    private final ServiceLayer serviceLayer;
     private final AppointmentService appointmentService;
 
     // 2️⃣ Constructor injection
     public PrescriptionController(PrescriptionService prescriptionService,
-                                  Service service,
+                                  ServiceLayer serviceLayer,
                                   AppointmentService appointmentService) {
         this.prescriptionService = prescriptionService;
-        this.service = service;
+        this.serviceLayer = serviceLayer;
         this.appointmentService = appointmentService;
     }
 
@@ -49,7 +49,7 @@ public class PrescriptionController {
             @RequestBody Prescription prescription,
             @PathVariable String token
     ) {
-        ResponseEntity<Map<String, Object>> validation = service.validateToken(token, "doctor");
+        ResponseEntity<Map<String, Object>> validation = serviceLayer.validateToken(token, "doctor");
         if (validation.getStatusCode() != HttpStatus.OK) {
             return validation;
         }
@@ -79,7 +79,7 @@ public class PrescriptionController {
             @PathVariable Long appointmentId,
             @PathVariable String token
     ) {
-        ResponseEntity<Map<String, Object>> validation = service.validateToken(token, "doctor");
+        ResponseEntity<Map<String, Object>> validation = serviceLayer.validateToken(token, "doctor");
         if (validation.getStatusCode() != HttpStatus.OK) {
             return validation;
         }

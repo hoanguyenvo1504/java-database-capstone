@@ -2,7 +2,7 @@
 package com.project.back_end.controllers;
 
 import com.project.back_end.models.Admin;
-import com.project.back_end.services.Service;
+import com.project.back_end.services.ServiceLayer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,15 +20,14 @@ import java.util.Map;
 @RequestMapping("${api.path}admin")
 public class AdminController {
 
-
-    private final Service service;
+    private final ServiceLayer serviceLayer;
 // 2. Autowire Service Dependency:
 //    - Use constructor injection to autowire the `Service` class.
 //    - The service handles core logic related to admin validation and token checking.
 //    - This promotes cleaner code and separation of concerns between the controller and business logic layer.
     @Autowired
-    public AdminController(Service service) {
-        this.service = service;
+    public AdminController(ServiceLayer serviceLayer) {
+        this.serviceLayer = serviceLayer;
     }
 
 // 3. Define the `adminLogin` Method:
@@ -38,6 +37,6 @@ public class AdminController {
 //    - Returns a `ResponseEntity` with a `Map` containing login status or messages.
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> adminLogin(@RequestBody Admin admin) {
-        return service.validateAdmin(admin.getUsername(), admin.getPassword());
+        return serviceLayer.validateAdmin(admin.getUsername(), admin.getPassword());
     }
 }

@@ -26,6 +26,4 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
 //    - The @Repository annotation marks this interface as a Spring Data JPA repository.
 //    - While it is technically optional (since JpaRepository is a part of Spring Data), it's good practice to include it for clarity.
 //    - Spring Data JPA automatically implements the repository, providing the necessary CRUD functionality.
-    boolean existsByEmail(String email);
-
 }

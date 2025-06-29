@@ -2,7 +2,7 @@ package com.project.back_end.controllers;
 
 import com.project.back_end.models.Appointment;
 import com.project.back_end.services.AppointmentService;
-import com.project.back_end.services.Service;
+import com.project.back_end.services.ServiceLayer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,10 +25,10 @@ public class AppointmentController {
 //    - Inject the general `Service` class, which provides shared functionality like token validation and appointment checks.
 
     private final AppointmentService appointmentService;
-    private final Service service;
-    public AppointmentController(AppointmentService appointmentService, Service service) {
+    private final ServiceLayer serviceLayer;
+    public AppointmentController(AppointmentService appointmentService, ServiceLayer serviceLayer) {
         this.appointmentService = appointmentService;
-        this.service = service;
+        this.serviceLayer = serviceLayer;
     }
 
 // 3. Define the `getAppointments` Method:
@@ -44,7 +44,7 @@ public class AppointmentController {
             @PathVariable String token
     ) {
         // Validate token for doctor role
-        ResponseEntity<Map<String, Object>> validation = service.validateToken(token, "doctor");
+        ResponseEntity<Map<String, Object>> validation = serviceLayer.validateToken(token, "doctor");
         if (validation.getStatusCode() != HttpStatus.OK) {
             return validation;
         }
@@ -57,7 +57,7 @@ public class AppointmentController {
             LocalDateTime endOfDay = parsedDate.atTime(23, 59, 59, 999_999_999);
 
             // Extract doctorId from token
-            Long doctorId = service.getDoctorIdFromToken(token);
+            Long doctorId = serviceLayer.getDoctorIdFromToken(token);
             if (doctorId == null) {
                 return new ResponseEntity<>("Invalid doctor token: doctor not found.", HttpStatus.UNAUTHORIZED);
             }
@@ -85,13 +85,13 @@ public class AppointmentController {
             @PathVariable String token
     ) {
         // Validate token for patient role
-        ResponseEntity<Map<String, Object>> validation = service.validateToken(token, "patient");
+        ResponseEntity<Map<String, Object>> validation = serviceLayer.validateToken(token, "patient");
         if (validation.getStatusCode() != HttpStatus.OK) {
             return validation;
         }
 
         // Validate appointment time
-        int checkResult = service.validateAppointment(
+        int checkResult = serviceLayer.validateAppointment(
                 appointment.getDoctor().getId(),
                 appointment.getAppointmentTime().toLocalDate(),
                 appointment.getAppointmentTime().toLocalTime().toString());
@@ -122,11 +122,11 @@ public class AppointmentController {
             @RequestBody Appointment updatedData,
             @PathVariable String token
     ) {
-        ResponseEntity<Map<String, Object>> validation = service.validateToken(token, "patient");
+        ResponseEntity<Map<String, Object>> validation = serviceLayer.validateToken(token, "patient");
         if (validation.getStatusCode() != HttpStatus.OK) {
             return validation;
         }
-        Long patientId = service.getPatientIdFromToken(token);
+        Long patientId = serviceLayer.getPatientIdFromToken(token);
         if (patientId == null) {
             return new ResponseEntity<>("Invalid patient token: patient not found.", HttpStatus.UNAUTHORIZED);
         }
@@ -155,13 +155,13 @@ public class AppointmentController {
             @PathVariable String token
     ) {
         // 1️⃣ Validate token for patient role
-        ResponseEntity<Map<String, Object>> validation = service.validateToken(token, "patient");
+        ResponseEntity<Map<String, Object>> validation = serviceLayer.validateToken(token, "patient");
         if (validation.getStatusCode() != HttpStatus.OK) {
             return validation;
         }
 
         // 2️⃣ Get patientId from token
-        Long patientId = service.getPatientIdFromToken(token);
+        Long patientId = serviceLayer.getPatientIdFromToken(token);
         if (patientId == null) {
             return new ResponseEntity<>("Invalid patient token: patient not found.", HttpStatus.UNAUTHORIZED);
         }
